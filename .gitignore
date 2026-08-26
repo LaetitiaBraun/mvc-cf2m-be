@@ -1,0 +1,9 @@
+# protection de la configuration
+config.php
+# PHPStorm
+.idea/
+# Workbench
+data/mvcprojetsV1.mwb.bak
+# DB request
+data/request.sql
+
