@@ -1,7 +1,11 @@
 <?php
-# 1 ) Ce fichier est le point d'entrée de l'application, il est appelé par le serveur web (Apache, Nginx, IIS, etc.) et il va charger les fichiers nécessaires pour exécuter l'application. - Comment l'appelle-t-on ? 
+# 1 ) Contrôleur frontal
 
-# 2) que lance-t-on à cette ligne ?
+# 2) A - Lors du premier session_start, création d'un cookie de session local
+# nommé par défaut PHPSESSID et création d'un fichier temporaire 
+# côté serveur (ici dans le dossier local C:\wamp64\tmp commençant par ses_{clef secrète})
+# Sécurisé : toutes les informations ne se trouve QUE côté serveur
+# B - Si une session est en cours et est valide, on la continue
 session_start();
 
 # 3) que charge-t-on à cette ligne ?
