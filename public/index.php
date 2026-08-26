@@ -4,28 +4,32 @@
 # 2) A - Lors du premier session_start, création d'un cookie de session local
 # nommé par défaut PHPSESSID et création d'un fichier temporaire 
 # côté serveur (ici dans le dossier local C:\wamp64\tmp commençant par ses_{clef secrète})
-# Sécurisé : toutes les informations ne se trouve QUE côté serveur
-# B - Si une session est en cours et est valide, on la continue
+# Sécurisé : toutes les informations ne se trouve QUE côté serveur.
+# B - Si une session est en cours et est valide, on la continue.
 session_start();
 
-# 3) que charge-t-on à cette ligne ?
+# 3) On charge 1x de manière obligatoire le fichier contenant les constantes de connexion à PDO
+# ! non existant dans l'arborescence(.gitignore).
 require_once "../config.php";
-# 4) que charge-t-on à ces lignes ?
+# 4) Chargement des modèles représentant les tables (sans celle de jointure) de la base de donnée.
+# En procédural elles contiennent en réalité des fonctions.
 require_once "../model/PostModel.php";# table post
 require_once "../model/CategoryModel.php";# table category
 require_once "../model/UserModel.php";# table user
 
 
-# 5 ) Nous essayons delancer quelle type d'objet, et pourquoi?
-try {
+# 5 ) Nous essayons de lancer L'instanciation de la classe PDO avec les constantes contenue dans config.php
+# pour créer une connexion SQL.
     $connectPDO = new PDO(
         DB_TYPE.':host='.DB_HOST.';port='.DB_PORT.';dbname='.DB_NAME.';charset='.DB_CHARSET,
         DB_LOGIN,
         DB_PWD
     );
-        # 6 ) activation de quoi
+        # 6 ) Activation du mode erreur pour les requêtes sinon risque de pages blanches, charger par défaut à
+        # partir de PHP 8.0.
         $connectPDO->setAttribute(PDO::ATTR_ERRMODE,PDO::ERRMODE_EXCEPTION);
-        # 7 ) En quoi voulons-nous que les résultats soient retournés par défaut ? 
+        # 7 ) Par défaut lors d'une récupération de résultat et du traitement d'un résultat par un fetch ou fetchAll,
+        # nous renvoi un tableau associatif.
         $connectPDO->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE,PDO::FETCH_ASSOC);
 
     
