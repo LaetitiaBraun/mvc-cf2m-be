@@ -20,6 +20,7 @@ require_once "../model/UserModel.php";# table user
 
 # 5 ) Nous essayons de lancer L'instanciation de la classe PDO avec les constantes contenue dans config.php
 # pour créer une connexion SQL.
+try {
     $connectPDO = new PDO(
         DB_TYPE.':host='.DB_HOST.';port='.DB_PORT.';dbname='.DB_NAME.';charset='.DB_CHARSET,
         DB_LOGIN,
@@ -33,11 +34,10 @@ require_once "../model/UserModel.php";# table user
         $connectPDO->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE,PDO::FETCH_ASSOC);
 
     
-# 8 ) le catch est appelé dans quel cas
+# 8 ) En cas d'erreur dans le try.
 }catch(Exception $e){
-    # 9 ) et que fait-il?
+    # 9 ) Il arrête le code à cette ligne et nous affiche l'instanciation de Exeption ($e = new Exeption) et la méthode publique getMessage qui est récupéré via le try.
     die($e->getMessage());
-
 }
 
 
@@ -53,5 +53,5 @@ if(isset($_SESSION['myID'])&&$_SESSION['myID']==session_id()){
 }
 
 
-# 10 )
+# 10 ) Bonne pratique, fermeture de la connexion
 $connectPDO = null;
