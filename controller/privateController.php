@@ -1,6 +1,6 @@
 <?php
 
-# 32 ) que fait-on ici ?
+# 32 ) Déconnexion.
 if (isset($_GET['disconnect'])) {
     // si déconnexion renvoie true
     if (deconnect()) {
@@ -9,7 +9,7 @@ if (isset($_GET['disconnect'])) {
         exit();
     }
 
-// 33 ) à quoi pourrait servir ce bloc de code ?   
+// 33 ) On vérifie l'existance de 2 variable et si elles ne contiennent que du numérique.
 }elseif(isset($_GET['postVisible'],$_GET['id'])
     &&ctype_digit($_GET['postVisible'])
     &&ctype_digit($_GET['id'])
@@ -17,22 +17,26 @@ if (isset($_GET['disconnect'])) {
     $postId = (int) $_GET['id'];
     $postVisible = (int) $_GET['postVisible'];
 
-    // 34 ) que fait-on ici ?
+    // 34a ) On rend un post visible ou invisible et on redirige vers l'accueil ou le succès.
     if (postAdminUpdateVisible($connectPDO, $postId, $postVisible)) {
         header("Location: ./?m=L'article dont l'id est $postId a été modifié");
         exit();
     } else {
+        # redirection en cas d'erreur vers l'accueil.
         header("Location: ./?m=Problème lors de la modification de l'article!");
         exit();
     }
 
-// 34 ) que veut on faire ici ?   
+// 34b ) Si il existe la variable gety nommée createPost on affiche le formulaire de création d'un article.
 }elseif(isset($_GET['createPost'])){
 
-    // 35) si on a envoyé ... quoi ?
+    // 35) Si on a envoyé le formulaire.
     if(isset($_POST['title'],$_POST['content'],$_POST['user_id'])){
         $UserId = (int) $_POST['user_id']; // si erreur => 0
-        // 36 ) que fait-on ici ?
+        // 36 ) Protecion des variables.
+        # trim retire les espaces avant et arrière.
+        # strip_tags retire les tags (balises).
+        # htmlspecialchars transforme les caractères spéciaux en entités html.
         $postTitle = htmlspecialchars(strip_tags(trim($_POST['title'])),ENT_QUOTES);
         $postContent = htmlspecialchars(strip_tags(trim($_POST['content'])),ENT_QUOTES);
         // ternaire ! si tableau les valeurs et clefs ne sont pas protégée contre une manipulation externe (injection etc...)
@@ -47,28 +51,28 @@ if (isset($_GET['disconnect'])) {
     }
     }
 
-    // 37 )Appel des catégories pour .
+    // 37 ) Pour avoir le choix des catègories pour le formulaire.
     $categoryChoice = getAllCategoryMenu($connectPDO);
 
-    // 38 ) On appel qui?
+    // 38 ) On appel tous les utilisateurs pour avoir le choix des utilisateurs pour le formulaire.
     $userChoice = getAllUsers($connectPDO);
 
-    // 39) que fait-on ici ?
+    // 39) On inclut la vue d'insertion de post de l'administration de privateInsertView.php.
     include "../view/privateView/privateInsertView.php";
 
-// 40 ) que fait-on ici ?  
+// 40 ) Si il existe la variable get nommée 'updatePost' et qu'il n'y a que des digit [0-9] dans la variable get (qui est un string par défaut).
 }elseif(isset($_GET['updatePost'])&&ctype_digit($_GET['updatePost'])){
 
     // si on a envoyé le formulaire de modification
     if(isset($_POST['title'])){
         // pas de vérification des variables $_POST au niveau du contrôleur !!! -> TOUTES LES Vérification doivent se trouver dans la fonction ! 
         $post = postAdminUpdate($connectPDO,$_POST); 
-        // 41 ) quel type de retour pour avoir une erreur
+        // 41 ) Un string (chîne de caractère).
         if(is_string($post)){
             // affichage de l'erreur
             $message = $post;
         }
-        // 42 ) quel type de retour pour avoir un succès
+        // 42 ) le booléen true.
         if($post===true){
             $message = "L'article a bien été modifié<script>
             setTimeout(\"location.href = './';\", 2000);
@@ -78,10 +82,10 @@ if (isset($_GET['disconnect'])) {
 
     $idUpdatePost = (int) $_GET['updatePost'];
 
-    # 43 ) que récupère t'on
+    # 43 ) On récupère un ou zéro post par son id.
     $recupPost = postOneById($connectPDO,$idUpdatePost);
 
-    # 44 ) que type de valeur peut-on récupérer ici, et que fait-on ensuite ?
+    # 44 ) Si c'est un booléen appel de la vue de la 404.
     if(is_bool($recupPost)){
         # récupération du menu pour l'erreur 404
         $recupMenu = getAllCategoryMenu($connectPDO);

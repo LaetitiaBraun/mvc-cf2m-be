@@ -100,10 +100,10 @@ if (isset($_GET['postId'])&&ctype_digit($_GET['postId'])) {
         }
     }
 
-    # 30 ) que fait-on ici ?
+    # 30 ) On inclus la vue de connectView.php.
     include "../view/publicView/connectView.php";
 
-# 31 ) sinon, où sommes nous ?
+# 31 ) Nous sommes sur la page d'accueil.
 }else{
     # homepage's datas from MODEL
     $recupAllPost = postHomepageAll($connectPDO);
