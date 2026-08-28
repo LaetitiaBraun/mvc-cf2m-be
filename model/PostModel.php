@@ -77,7 +77,7 @@ function postByCategoryId(PDO $db,int $idcateg): array{
             ON p.id = h2.post_id
         LEFT JOIN category c2 
             ON c2.id = h2.category_id
-        WHERE c.id = :id
+        WHERE c.id = :id AND p.visible = 1 -- doit être actif
             GROUP BY p.id
     ORDER BY p.datecreate DESC;";
 
