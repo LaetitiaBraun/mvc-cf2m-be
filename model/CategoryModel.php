@@ -1,5 +1,5 @@
 <?php
-# 50 ) que fait-on ici ?
+# 50 ) On récupère l'id et le title de toutes les catégories ordonnées par id ascendant.
 function getAllCategoryMenu(PDO $db): array {
     $sql ="SELECT id, title FROM category ORDER BY id ASC";
     try{
@@ -10,7 +10,7 @@ function getAllCategoryMenu(PDO $db): array {
     return $query->fetchAll(PDO::FETCH_ASSOC);
 }
 
-# 51 ) que fait-on ici ?
+# 51 ) On récupère la catégorie via son id sous forme de tableau, si il n'existe pas, le fetch vaudra false.
 function recupCategoryById(PDO $db,int $id):array|bool{
     $recup = "SELECT * FROM category where id=?";
     $prepare = $db -> prepare($recup);

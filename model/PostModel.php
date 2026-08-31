@@ -1,5 +1,7 @@
 <?php
-// 52 ) que récupère-t-on?
+// 52 ) On récupère via un tableau (fetchAll -> tableau indexé), une liste de tous les posts visibles (en format tableaux assosiatifs). On récupère depuis post : l'id, title, content 255 caractère renommé en contentshort,
+# datecreate. On récupère depuis user (Jointure interne : obligatoire): id nommé iduser, userscreen. On récupère (si existante - jointure externe avec left) depuis category en passant par la table de jointure 
+# (category_has_post) les id renommée idcategory et les title séparé par (||0||) et renommé titlecategorytitlecategory.
 function postHomepageAll(PDO $db): array{
     $sql = "SELECT p.id, p.title, LEFT(p.content, 255) AS contentshort, p.datecreate, u.id AS iduser, u.userscreen, 
     GROUP_CONCAT(c.id) AS idcategory, 
@@ -28,7 +30,7 @@ function postHomepageAll(PDO $db): array{
     return $bp;
 }
 
-// 53 ) que récupère-t-on
+// 53 ) On récupère 1 (array) ou 0 (bool) post via son id.
 function postOneById(PDO $db, int $id): array|bool{
     // si mauvais format : 0
     // $id = (int) $id;
@@ -60,7 +62,8 @@ function postOneById(PDO $db, int $id): array|bool{
 
 }
 
-// 54 ) que récupère-t-on
+// 54 ) On récupère de 0 à x posts qui se trouvent dans l'id de la catégorie, ! la deuxième jointure many to many sert avec d'autres alias sert à récupérer les catégories des articles des posts autres que celle recherché
+# dans le where.
 function postByCategoryId(PDO $db,int $idcateg): array{
     $sql = "SELECT p.id, p.title, LEFT(p.content, 255) AS contentshort, p.datecreate, u.id AS iduser, u.userscreen, 
     GROUP_CONCAT(c2.id) AS idcategory, 
@@ -93,7 +96,7 @@ function postByCategoryId(PDO $db,int $idcateg): array{
     return $return;
 }
 
-// 55) que récupère-t-on
+// 55) On récupère tous les resumés de post grâce à l'id de l'utilisateur sous forme de tableau indexé(contenant une liste de tableaux assiciatifs).
 function postByUserId(PDO $db,int $iduser): array{
     $sql = "SELECT p.id, p.title, LEFT(p.content, 255) AS contentshort, p.datecreate, u.id AS iduser, u.userscreen, 
     GROUP_CONCAT(c.id) AS idcategory, 
@@ -106,7 +109,7 @@ function postByUserId(PDO $db,int $iduser): array{
         LEFT JOIN category c 
             ON c.id = h.category_id
        
-        WHERE u.id = ?
+        WHERE u.id = ? AND p.visible = 1
             GROUP BY p.id
     ORDER BY p.datecreate DESC;";
     $prepare = $db->prepare($sql);
@@ -120,12 +123,12 @@ function postByUserId(PDO $db,int $iduser): array{
     return $return;
 }
 
-// 56) que fait cette fonction ?
+// 56) Elle coupe le texte au dernier espace vide.
     function trunCate (string $text): string{
     $cut = strrpos($text, ' ');
     return substr ($text, 0,$cut);
 }
-// 57) que fait cette fonction
+// 57) Elle met la date en français.
   function dateToFrench(string $date, string $format="l j F Y \à h \h i "): string{
     $english_days = array('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday');
     $french_days = array('lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche');
@@ -138,7 +141,7 @@ function postByUserId(PDO $db,int $iduser): array{
 ADMIN FUNCTIONS
     */
 
-// 58) que récupère-t-on
+// 58) On récupère tous les posts sans restriction pour la homepage de l'admin.
 function postAdminHomepageAll(PDO $db): array{
     $sql = "SELECT p.id, p.title, LEFT(p.content, 255) AS contentshort, p.datecreate, p.visible,
     u.id AS iduser, u.userscreen, 
@@ -151,7 +154,7 @@ function postAdminHomepageAll(PDO $db): array{
             ON p.id = h.post_id
         LEFT JOIN category c 
             ON c.id = h.category_id
-            #WHERE p.id =150
+            -- WHERE p.id =150
             GROUP BY p.id
         
     ORDER BY p.datecreate DESC, p.id DESC;";
@@ -169,8 +172,8 @@ function postAdminHomepageAll(PDO $db): array{
     return $bp;
 }
 
-// 59) que fait cette fonction ?
-function postAdminUpdateVisible(PDO $db, int $id, int $visible):bool{
+// 59) Permet de modifier la visibilité d'un article via son id et la visibilité (1 ou 0).
+function postAdminUpdateVisible(PDO $db, int $id, int $visible):int{
     $sql="UPDATE `post` SET `visible` = ? WHERE `id` = ?;";
     $prepare = $db->prepare($sql);
     try{
@@ -181,7 +184,7 @@ function postAdminUpdateVisible(PDO $db, int $id, int $visible):bool{
     return $prepare->rowCount();
 }
 
-// 60 ) que fait cette fonction ?
+// 60 ) Permet de supprimer un post via son id.
 function postAdminDeleteById(PDO $db, int $id): bool {
     // pour utiliser l'exec plutôt que le prepare/execute, mauvaise pratique
     $sql="DELETE FROM `post` WHERE id=$id";
@@ -195,7 +198,8 @@ function postAdminDeleteById(PDO $db, int $id): bool {
 
 }
 
-//  61 ) que fait cette fonction ?
+//  61 ) Elle insert un nouvel article dans la db. Utilisation de la transaction pour vérifier pour que toutes les requête soient réussies pour valider. En cas d'échec on utilise un rollBack 
+# qui va annuler toutes les requêtes.
 function postAdminInsert(PDO $db, int $idUser, string $title, string $content, array $idCateg=[]):bool{
     // début de transaction, arrête les autocommit, il faut appeler $db->commit() pour que toutes les requêtes soient effectivement validées
     $db->beginTransaction();
@@ -250,7 +254,7 @@ if(!empty($idCateg)){
 
 }
 
-// 62 ) que fait cette fonction ?
+// 62 ) 
 function postAdminUpdate(PDO $db, array $postForm): bool|string {
     // on est ICI et aucune variable n'a PAS été vérifiée !
     # var_dump($postForm); 

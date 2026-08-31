@@ -97,17 +97,17 @@ if (isset($_GET['disconnect'])) {
     // on a trouvé l'article    
     }else{
 
-    // 45) on appel les ...
+    // 45) on appel les catégories pour le menu.
     $categoryChoice = getAllCategoryMenu($connectPDO);
 
-    // 46 ) on appel les ...
+    // 46 ) on appel tous les utilisateurs pour le menu déroulant.
     $userChoice = getAllUsers($connectPDO);
 
-    // 47 ) on appel la ...
+    // 47 ) on appel la vue de la modification.
     include "../view/privateView/privateUpdateView.php";
 }
 
-// 48 ) que fait-on ici ? 
+// 48 ) Sinon si on vérifie l'existance de la variable get deletePost et qu'il n'y a que du numérique dans la chaîne de caracère.
 }elseif(isset($_GET['deletePost'])&&ctype_digit($_GET['deletePost'])){
 
     $postId = (int) $_GET['deletePost'];
@@ -116,12 +116,12 @@ if (isset($_GET['disconnect'])) {
         header("Location: ./?m=L'article dont l'id est $postId a été supprimé");
         exit();
     }else{
-        header("Location: ./?m=Problème lors de la modification de l'article!");
+        header("Location: ./?m=Problème lors de la suppression de l'article!");
         exit();
     }
 
     
-// 49) quel est cette page  
+// 49) Sinon on affiche la homepage sans restriction.
 }else{
     // appel due la méthode (fonction) modèle PostModel pour afficher tous les articles SANS restrictions
     $postAll = postAdminHomepageAll($connectPDO);
