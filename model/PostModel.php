@@ -254,7 +254,8 @@ if(!empty($idCateg)){
 
 }
 
-// 62 ) 
+// 62 ) On fait la mise à jour du post en utilisant la transaction, qui vérifie que toutes les requêtes soient bien executées, en cas d'une seule erreur, le commit ne fontionne pas et on remet les reqêtes à l'état
+# précédent la transaction.
 function postAdminUpdate(PDO $db, array $postForm): bool|string {
     // on est ICI et aucune variable n'a PAS été vérifiée !
     # var_dump($postForm); 
